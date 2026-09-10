@@ -1,0 +1,1 @@
+package com.employeeportal.repo; import com.employeeportal.model.Payslip; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface PayslipRepository extends JpaRepository<Payslip,Long>{List<Payslip> findByUserIdOrderByMonthDesc(Long userId);}

@@ -1,0 +1,15 @@
+# Optional only. The project no longer requires Docker for local development.
+services:
+  postgres:
+    image: postgres:16
+    container_name: employee-portal-postgres
+    environment:
+      POSTGRES_DB: employee_portal
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - employee_portal_pg:/var/lib/postgresql/data
+volumes:
+  employee_portal_pg:

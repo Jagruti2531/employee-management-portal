@@ -1,0 +1,1 @@
+package com.employeeportal.repo; import com.employeeportal.model.LeaveRequest; import org.springframework.data.jpa.repository.JpaRepository; import java.util.*; public interface LeaveRepository extends JpaRepository<LeaveRequest,Long>{List<LeaveRequest> findByUserIdOrderByStartDateDesc(Long userId); List<LeaveRequest> findByStatusOrderByStartDateDesc(String status);}

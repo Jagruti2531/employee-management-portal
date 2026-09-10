@@ -1,0 +1,1 @@
+package com.employeeportal.repo; import com.employeeportal.model.Attendance; import org.springframework.data.jpa.repository.JpaRepository; import java.time.LocalDate; import java.util.*; public interface AttendanceRepository extends JpaRepository<Attendance,Long>{List<Attendance> findByUserIdOrderByWorkDateDesc(Long userId); List<Attendance> findByWorkDate(LocalDate date);}
