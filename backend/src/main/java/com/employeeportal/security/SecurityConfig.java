@@ -1,6 +1,75 @@
 package com.employeeportal.security;
-import org.springframework.context.annotation.*; import org.springframework.security.config.annotation.web.builders.HttpSecurity; import org.springframework.security.config.http.SessionCreationPolicy; import org.springframework.security.web.*; import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; import org.springframework.web.cors.*; import java.util.*;
-@Configuration public class SecurityConfig {
- @Bean SecurityFilterChain filterChain(HttpSecurity http,JwtFilter jwt)throws Exception{http.csrf(c->c.disable()).cors(c->c.configurationSource(cors())).sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(a->a.requestMatchers(org.springframework.http.HttpMethod.OPTIONS,"/**").permitAll().requestMatchers("/api/auth/**").permitAll().requestMatchers("/api/hr/**").hasRole("HR").requestMatchers("/api/manager/**").hasAnyRole("MANAGER","HR","ADMIN").requestMatchers("/api/admin/**").hasRole("ADMIN").anyRequest().authenticated()).addFilterBefore(jwt,UsernamePasswordAuthenticationFilter.class);return http.build();}
- @Bean CorsConfigurationSource cors(){CorsConfiguration c=new CorsConfiguration();c.setAllowedOrigins(List.of("http://localhost:5173","http://127.0.0.1:5173"));c.setAllowedMethods(List.of("GET","POST","PUT","DELETE","PATCH","OPTIONS"));c.setAllowedHeaders(List.of("*"));c.setAllowCredentials(true);UrlBasedCorsConfigurationSource s=new UrlBasedCorsConfigurationSource();s.registerCorsConfiguration("/**",c);return s;}
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+@Configuration
+public class SecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            JwtFilter jwt) throws Exception {
+
+        http
+            .csrf(csrf -> csrf.disable())
+
+            .cors(cors -> {
+                // CORS handled by global CorsFilter
+            })
+
+            .sessionManagement(session ->
+                session.sessionCreationPolicy(
+                    SessionCreationPolicy.STATELESS
+                )
+            )
+
+            .authorizeHttpRequests(auth -> auth
+
+                // CORS preflight
+                .requestMatchers(
+                    HttpMethod.OPTIONS,
+                    "/**"
+                ).permitAll()
+
+                // Login / signup
+                .requestMatchers(
+                    "/api/auth/**"
+                ).permitAll()
+
+                // HR
+                .requestMatchers(
+                    "/api/hr/**"
+                ).hasRole("HR")
+
+                // Manager
+                .requestMatchers(
+                    "/api/manager/**"
+                ).hasAnyRole(
+                    "MANAGER",
+                    "HR",
+                    "ADMIN"
+                )
+
+                // Admin
+                .requestMatchers(
+                    "/api/admin/**"
+                ).hasRole("ADMIN")
+
+                // Everything else requires login
+                .anyRequest().authenticated()
+            )
+
+            .addFilterBefore(
+                jwt,
+                UsernamePasswordAuthenticationFilter.class
+            );
+
+        return http.build();
+    }
 }
